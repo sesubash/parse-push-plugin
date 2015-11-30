@@ -1,5 +1,6 @@
 package com.phonegap.parsepushplugin;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.lang.Exception;
@@ -21,6 +22,7 @@ import android.util.Log;
 public class ParsePushPlugin extends CordovaPlugin {
     public static final String ACTION_GET_INSTALLATION_ID = "getInstallationId";
     public static final String ACTION_GET_INSTALLATION_OBJECT_ID = "getInstallationObjectId";
+    public static final String ACTION_UPDATE_INSTALLATION_OBJECT = "updateInstallationObject";
     public static final String ACTION_GET_SUBSCRIPTIONS = "getSubscriptions";
     public static final String ACTION_SUBSCRIBE = "subscribe";
     public static final String ACTION_UNSUBSCRIBE = "unsubscribe";
@@ -46,9 +48,15 @@ public class ParsePushPlugin extends CordovaPlugin {
         }
 
         if (action.equals(ACTION_GET_INSTALLATION_OBJECT_ID)) {
-            this.getInstallationObjectId(callbackContext);
+            this.updateInstallationObject(callbackContext);
             return true;
         }
+
+        if (action.equals(ACTION_UPDATE_INSTALLATION_OBJECT)) {
+            this.updateInstallationObject(callbackContext);
+            return true;
+        }
+
         if (action.equals(ACTION_GET_SUBSCRIPTIONS)) {
             this.getSubscriptions(callbackContext);
             return true;
@@ -79,6 +87,25 @@ public class ParsePushPlugin extends CordovaPlugin {
             public void run() {
                 String objectId = ParseInstallation.getCurrentInstallation().getObjectId();
                 callbackContext.success(objectId);
+            }
+        });
+    }
+
+    private void updateInstallationObject(final String values, final CallbackContext callbackContext) {
+        cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+                var jObject = new JSONObject(values.trim());
+                Iterator<?> keys = jObject.keys();
+
+                while( keys.hasNext() ) {
+                    String key = (String)keys.next();
+                    if ( jObject.get(key) instanceof JSONObject ) {
+                      installation.put(key, jObject.get(key));
+                    }
+                }
+                installation.saveInBackground();
+                callbackContext.success();
             }
         });
     }
