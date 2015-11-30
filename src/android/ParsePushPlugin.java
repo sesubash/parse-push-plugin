@@ -95,9 +95,9 @@ public class ParsePushPlugin extends CordovaPlugin {
         cordova.getThreadPool().execute(new Runnable() {
             public void run() {
                 ParseInstallation installation = ParseInstallation.getCurrentInstallation();
-                var jObject = new JSONObject(values.trim());
+                private JSONObjects jObject = new JSONObject(values.trim());
                 Iterator<?> keys = jObject.keys();
-
+s
                 while( keys.hasNext() ) {
                     String key = (String)keys.next();
                     if ( jObject.get(key) instanceof JSONObject ) {
