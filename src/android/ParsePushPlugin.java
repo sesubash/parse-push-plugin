@@ -48,12 +48,12 @@ public class ParsePushPlugin extends CordovaPlugin {
         }
 
         if (action.equals(ACTION_GET_INSTALLATION_OBJECT_ID)) {
-            this.updateInstallationObject(callbackContext);
+            this.getInstallationObjectId(callbackContext);
             return true;
         }
 
         if (action.equals(ACTION_UPDATE_INSTALLATION_OBJECT)) {
-            this.updateInstallationObject(callbackContext);
+            this.updateInstallationObject(args.getString(0), callbackContext);
             return true;
         }
 
